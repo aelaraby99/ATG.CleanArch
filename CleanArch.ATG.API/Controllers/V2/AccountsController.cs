@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.DirectoryServices.AccountManagement;
 
 namespace CleanArch.ATG.API.Controllers.V2
 {
@@ -93,18 +94,69 @@ namespace CleanArch.ATG.API.Controllers.V2
             var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(existingUser , request.Password , false);
             if (!isPasswordValid.Succeeded)
                 return BadRequest("Invalid");
-            var result = await _signInManager.PasswordSignInAsync(existingUser, request.Password , false , false);
+            var result = await _signInManager.PasswordSignInAsync(existingUser , request.Password , false , false);
             if (!result.Succeeded)
                 return BadRequest("Invalid credentials.");
-
-            var token = _jwtTokenservice.GenerateToken(existingUser);
-            return Ok(new {Token = token});
+            var userRoles = await _userManager.GetRolesAsync(existingUser);
+            var token = _jwtTokenservice.GenerateToken(existingUser , userRoles);
+            return Ok(new { Token = token });
         }
-        [HttpGet("Authorized")]
-        [Authorize]
+        [HttpGet("PrivateData")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PrivateData()
         {
-            return Ok("Authorized");
+            return Ok("Admin Authorized");
+        }
+        [HttpGet("TestData")]
+        [Authorize(Roles = "Admin,TestRole")]
+        public async Task<IActionResult> TestData()
+        {
+            return Ok("Test/Admin Authorized");
+        }
+        [HttpGet("UserData")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> UserData()
+        {
+            return Ok("User/Admin Authorized");
+        }
+
+        [HttpPost("ActiveDir")]
+        public async Task<IActionResult> ActiveDir( string userName , string password )
+        {
+            //var userPrincipal = UserPrincipal.Current.GetAuthorizationGroups();
+            //foreach (var group in userPrincipal)
+            //{
+            //    Console.WriteLine(group.DisplayName);
+            //    Console.WriteLine(group.Name);
+            //    Console.WriteLine(group.DistinguishedName);
+            //    Console.WriteLine("=========================");
+            //}
+            using (var context = new PrincipalContext(ContextType.Domain , "ASSETDEV"))
+            {
+
+                if (context.ValidateCredentials(userName , password))
+                {
+                    var currentUser = UserPrincipal.FindByIdentity(context , IdentityType.SamAccountName , userName);
+                    var groups = currentUser.GetAuthorizationGroups();
+                    var permisions = new List<string>();
+                    foreach (var group in groups)
+                    {
+                        permisions.Add(group.Name);
+                    }
+                    var obj = new
+                    {
+                        currentUser.DisplayName ,
+                        currentUser.EmailAddress ,
+                        currentUser.GivenName ,
+                        currentUser.SamAccountName ,
+                        currentUser.UserPrincipalName,
+                        permissons = string.Join(",",permisions)
+                    };
+
+                    return Ok(obj);
+                }
+            }
+            return Ok("False");
         }
     }
 }

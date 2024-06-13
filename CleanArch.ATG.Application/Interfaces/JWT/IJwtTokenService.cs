@@ -10,6 +10,6 @@ namespace CleanArch.ATG.Application.Interfaces.JWT
 {
     public interface IJwtTokenService
     {
-        string GenerateToken( UserApplication user );
+        string GenerateToken( UserApplication user , IEnumerable<string> roles );
     }
 }
