@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Configuration;
+using NLog.Extensions.Logging;
 using System.Text;
 
 namespace CleanArch.ATG.API
@@ -73,7 +73,12 @@ namespace CleanArch.ATG.API
                     ValidateAudience = false
                 };
             });
-
+            // Add NLog as the logging provider
+            services.AddLogging(loggingBuilder =>
+            {
+                //loggingBuilder.ClearProviders();
+                loggingBuilder.AddNLog(); // Add NLog as the logging provider
+            });
             return services;
         }
     }

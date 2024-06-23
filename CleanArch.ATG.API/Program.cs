@@ -1,8 +1,7 @@
+using CleanArch.ATG.API.Middlewares;
 using CleanArch.ATG.Application;
 using CleanArch.ATG.Infrastructure;
-using CleanArch.ATG.Infrastructure.Contexts;
-using Microsoft.EntityFrameworkCore.Storage;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace CleanArch.ATG.API
 {
@@ -32,14 +31,7 @@ namespace CleanArch.ATG.API
                     c.SwaggerEndpoint("/swagger/v1/swagger.json" , "API V1"); //Select a definition
                     c.SwaggerEndpoint("/swagger/v2/swagger.json" , "API V2");
                 });
-
-                //dotnet ef migrations add InitialCreate--context ATGIdentityDbContext --output - dir Migrations / ATGIdentityDbContextMigrations
-
-                //dotnet ef database update --context ATGIdentityDbContext
-
-
             }
-
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
@@ -48,7 +40,7 @@ namespace CleanArch.ATG.API
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.MapControllers();
 

@@ -1,11 +1,11 @@
 ﻿using Asp.Versioning;
-using CleanArch.ATG.API.Controllers.V1;
 using CleanArch.ATG.Application.Features.ProductFeatures.Commands;
-using CleanArch.ATG.Application.Features.ProductFeatures.Notifications;
 using CleanArch.ATG.Application.Features.ProductFeatures.Queries;
 using CleanArch.ATG.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
+using System.Text.Json;
 
 namespace CleanArch.ATG.API.Controllers.V2
 {
@@ -23,10 +23,12 @@ namespace CleanArch.ATG.API.Controllers.V2
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController( IMediator mediator )
+        public ProductsController( IMediator mediator , ILogger<ProductsController> logger )
         {
             _mediator = mediator;
+            _logger = logger;
         }
         //[HttpGet]
         //public IActionResult Get()
@@ -43,12 +45,18 @@ namespace CleanArch.ATG.API.Controllers.V2
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Product>> GetProductById( int id )
         {
-            var product = await _mediator.Send(new GetProductByIdQuery(id));
-            //if (product == null)
-            //{
-            //    return NotFound();
-            //}
-            return Ok(product);
+                _logger.LogWarning($"GetProductById {id} called");
+                var product = await _mediator.Send(new GetProductByIdQuery(id));
+                if (product != null)
+                {
+                    _logger.LogInformation(JsonSerializer.Serialize(product));
+                    return Ok(product);
+                }
+                else
+                {
+                    _logger.LogWarning(id.ToString() + " not found");
+                    return NotFound();
+                }
         }
         [HttpPost]
         public async Task<ActionResult<Product>> AddProduct( [FromBody] Product product )

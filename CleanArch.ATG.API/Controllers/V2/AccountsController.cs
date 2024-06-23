@@ -141,7 +141,10 @@ namespace CleanArch.ATG.API.Controllers.V2
                     var permisions = new List<string>();
                     foreach (var group in groups)
                     {
-                        permisions.Add(group.Name);
+                        if (group is GroupPrincipal)
+                        {
+                            permisions.Add(group.Name);
+                        }
                     }
                     var obj = new
                     {
@@ -149,10 +152,10 @@ namespace CleanArch.ATG.API.Controllers.V2
                         currentUser.EmailAddress ,
                         currentUser.GivenName ,
                         currentUser.SamAccountName ,
-                        currentUser.UserPrincipalName,
-                        permissons = string.Join(",",permisions)
+                        currentUser.UserPrincipalName ,
+                        permissons = string.Join("," , permisions)
                     };
-
+                    ///
                     return Ok(obj);
                 }
             }
