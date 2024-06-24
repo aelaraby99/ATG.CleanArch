@@ -3,6 +3,7 @@ using System;
 using CleanArch.ATG.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -11,9 +12,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace CleanArch.ATG.Infrastructure.Migrations
 {
     [DbContext(typeof(ATGDbContext))]
-    partial class ATGDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624102451_RemoveLibrary")]
+    partial class RemoveLibrary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -45,18 +45,19 @@ namespace CleanArch.ATG.API.Controllers.V2
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Product>> GetProductById( int id )
         {
-                _logger.LogWarning($"GetProductById {id} called");
-                var product = await _mediator.Send(new GetProductByIdQuery(id));
-                if (product != null)
-                {
-                    _logger.LogInformation(JsonSerializer.Serialize(product));
-                    return Ok(product);
-                }
-                else
-                {
-                    _logger.LogWarning(id.ToString() + " not found");
-                    return NotFound();
-                }
+            _logger.LogWarning($"GetProductById {id} called");
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
+            throw new Exception("This is a test exception");
+            if (product != null)
+            {
+                _logger.LogInformation(JsonSerializer.Serialize(product));
+                return Ok(product);
+            }
+            else
+            {
+                _logger.LogWarning(id.ToString() + " not found");
+                return NotFound();
+            }
         }
         [HttpPost]
         public async Task<ActionResult<Product>> AddProduct( [FromBody] Product product )

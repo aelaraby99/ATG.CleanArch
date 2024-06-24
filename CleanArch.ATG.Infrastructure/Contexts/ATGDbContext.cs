@@ -17,11 +17,13 @@ namespace CleanArch.ATG.Infrastructure.Contexts
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<BrandCategory> BrandCategories { get; set; }
+        public DbSet<Book> Books { get; set; }
+        //public DbSet<Library> Libraries { get; set; }
 
-        public ATGDbContext(DbContextOptions<ATGDbContext> options) : base(options)
+        public ATGDbContext( DbContextOptions<ATGDbContext> options ) : base(options)
         {
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating( ModelBuilder modelBuilder )
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

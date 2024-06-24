@@ -3,6 +3,7 @@ using System;
 using CleanArch.ATG.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -11,9 +12,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace CleanArch.ATG.Infrastructure.Migrations
 {
     [DbContext(typeof(ATGDbContext))]
-    partial class ATGDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624100834_AddingLibRelWithBook")]
+    partial class AddingLibRelWithBook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,11 +37,16 @@ namespace CleanArch.ATG.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("NUMBER(10)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("BookId");
+
+                    b.HasIndex("LibraryId");
 
                     b.ToTable("Books");
                 });
@@ -102,6 +110,27 @@ namespace CleanArch.ATG.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Library", b =>
+                {
+                    b.Property<int>("LibraryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LibraryId"));
+
+                    b.Property<string>("LibraryName")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("LibraryId");
+
+                    b.ToTable("Libraries");
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Order", b =>
@@ -175,6 +204,17 @@ namespace CleanArch.ATG.Infrastructure.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Book", b =>
+                {
+                    b.HasOne("CleanArch.ATG.Domain.Entities.Library", "Library")
+                        .WithMany("Books")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
+                });
+
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.BrandCategory", b =>
                 {
                     b.HasOne("CleanArch.ATG.Domain.Entities.Brand", "Brand")
@@ -221,6 +261,11 @@ namespace CleanArch.ATG.Infrastructure.Migrations
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Category", b =>
                 {
                     b.Navigation("BrandCategories");
+                });
+
+            modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Library", b =>
+                {
+                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }
