@@ -1,15 +1,12 @@
 ﻿using CleanArch.ATG.Domain.Entities;
+using CleanArch.ATG.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.ATG.Infrastructure.Contexts
 {
-    public class ATGDbContext : DbContext
+    public class ATGDbContext : IdentityDbContext<UserApplication , AppRole , Guid>
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }

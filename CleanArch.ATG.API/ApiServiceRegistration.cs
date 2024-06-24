@@ -44,13 +44,13 @@ namespace CleanArch.ATG.API
                 (options => options.UseOracle(configuration.GetConnectionString("OracleConnection") ,
                 b => b.MigrationsAssembly(typeof(ATGDbContext).Assembly.FullName)));
 
-            services.AddDbContext<ATGIdentityDbContext>
-                (options => options.UseOracle(configuration.GetConnectionString("OracleConnection") ,
-                 b => b.MigrationsAssembly(typeof(ATGIdentityDbContext).Assembly.FullName)));
+            //services.AddDbContext<ATGIdentityDbContext>
+            //    (options => options.UseOracle(configuration.GetConnectionString("OracleConnection") ,
+            //     b => b.MigrationsAssembly(typeof(ATGIdentityDbContext).Assembly.FullName)));
             //services.AddDefaultIdentity<UserApplication>()
             //  .AddEntityFrameworkStores<ATGIdentityDbContext>();
             services.AddIdentity<UserApplication , AppRole>()
-                .AddEntityFrameworkStores<ATGIdentityDbContext>()
+                .AddEntityFrameworkStores<ATGDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IJwtTokenService , JwtTokenService>();
