@@ -1,4 +1,5 @@
 ﻿using CleanArch.ATG.Application.Interfaces;
+using CleanArch.ATG.Domain.Entities;
 using CleanArch.ATG.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,10 @@ namespace CleanArch.ATG.Infrastructure.Repositories
         {
             _dbSet.Update(entity);
             return Task.CompletedTask;
+        }
+        public List<BookByAuthor> GetBooksByAuthor( string authorName )
+        {
+            return _dbContext.Set<BookByAuthor>().FromSqlRaw("EXEC GetBooks @P_AuthorName" , authorName).ToList();
         }
     }
 }

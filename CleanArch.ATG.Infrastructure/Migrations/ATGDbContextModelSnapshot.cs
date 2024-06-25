@@ -40,7 +40,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasKey("BookId");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Brand", b =>
@@ -57,7 +57,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.BrandCategory", b =>
@@ -78,7 +78,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BrandCategories");
+                    b.ToTable("BrandCategories", (string)null);
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Category", b =>
@@ -101,7 +101,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Identity.AppRole", b =>
@@ -221,7 +221,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.OrderDetail", b =>
@@ -245,7 +245,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.Product", b =>
@@ -270,7 +270,7 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

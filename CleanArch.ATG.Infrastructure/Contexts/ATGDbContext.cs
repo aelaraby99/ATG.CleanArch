@@ -2,6 +2,7 @@
 using CleanArch.ATG.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Z.EntityFramework.Extensions.EFCore;
 using System.Reflection;
 
 namespace CleanArch.ATG.Infrastructure.Contexts
@@ -15,6 +16,7 @@ namespace CleanArch.ATG.Infrastructure.Contexts
         public DbSet<Brand> Brands { get; set; }
         public DbSet<BrandCategory> BrandCategories { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<BookByAuthor> BooksAuthor { get; set; }
         //public DbSet<Library> Libraries { get; set; }
 
         public ATGDbContext( DbContextOptions<ATGDbContext> options ) : base(options)
@@ -23,6 +25,7 @@ namespace CleanArch.ATG.Infrastructure.Contexts
         protected override void OnModelCreating( ModelBuilder modelBuilder )
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<BookByAuthor>().HasNoKey();
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

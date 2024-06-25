@@ -1,0 +1,13 @@
+create or replace NONEDITIONABLE PROCEDURE GetBooks (
+Auth_Name in NVARCHAR2,
+title OUT NVARCHAR2 ,
+authorName OUT NVARCHAR2
+)
+AS
+BEGIN
+          SELECT  "A1"."Title" ,"A1"."AuthorName" INTO title , authorName
+FROM
+    "NSAPOC"."Books" "A1"
+WHERE
+    "A1"."AuthorName" = Auth_Name ;
+END GetBooks;

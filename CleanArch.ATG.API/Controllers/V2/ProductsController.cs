@@ -2,9 +2,13 @@
 using CleanArch.ATG.Application.Features.ProductFeatures.Commands;
 using CleanArch.ATG.Application.Features.ProductFeatures.Queries;
 using CleanArch.ATG.Domain.Entities;
+using CleanArch.ATG.Infrastructure.Contexts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NLog;
+using Oracle.ManagedDataAccess.Client;
+using System.Data;
 using System.Text.Json;
 
 namespace CleanArch.ATG.API.Controllers.V2
@@ -24,11 +28,13 @@ namespace CleanArch.ATG.API.Controllers.V2
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProductsController> _logger;
+        private readonly ATGDbContext _context;
 
-        public ProductsController( IMediator mediator , ILogger<ProductsController> logger )
+        public ProductsController( IMediator mediator , ILogger<ProductsController> logger , ATGDbContext context )
         {
             _mediator = mediator;
             _logger = logger;
+            _context = context;
         }
         //[HttpGet]
         //public IActionResult Get()
@@ -80,6 +86,41 @@ namespace CleanArch.ATG.API.Controllers.V2
                 return BadRequest();
             await _mediator.Send(new UpdateProductCommand(product));
             return Ok();
+        }
+        [HttpGet("Books")]
+        public IActionResult GetBooksByAuthor( string authorName )
+        {
+            var authorNameParameter = new OracleParameter("Auth_Name" , OracleDbType.NVarchar2)
+            {
+                Value = authorName
+            };
+
+            var titleParameter = new OracleParameter
+            {
+                ParameterName = "title" ,
+                OracleDbType = OracleDbType.NVarchar2 ,
+                Direction = ParameterDirection.Output ,
+                Size = 255
+            };
+
+            var authorNameOutputParameter = new OracleParameter
+            {
+                ParameterName = "authorName" ,
+                OracleDbType = OracleDbType.NVarchar2 ,
+                Direction = ParameterDirection.Output ,
+                Size = 255
+            };
+
+            _context.Database.ExecuteSqlRaw("BEGIN GetBooks(:Auth_Name, :title, :authorName); END;" ,
+                                           authorNameParameter , titleParameter , authorNameOutputParameter);
+
+            var book = new BookByAuthor()
+            {
+                title = titleParameter.Value.ToString() ,
+                authorName = authorNameOutputParameter.Value.ToString()
+            };
+
+            return Ok(book);
         }
     }
 }
