@@ -11,3 +11,15 @@ FROM
 WHERE
     "A1"."AuthorName" = Auth_Name ;
 END GetBooks;
+===========================================
+Create User "Ninja" IDENTIFIED BY "P@ssword";
+select * from all_users;
+ show con_name;
+ CDB$ROOT;
+ 
+alter session set container = orclpdb;
+
+select name,open_mode from v$pdbs;
+
+alter PLUGGABLE DATABASE ORCLPDB save STATE;
+conn hr/hr@orclpdb;

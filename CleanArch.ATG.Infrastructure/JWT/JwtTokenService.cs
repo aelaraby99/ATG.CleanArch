@@ -20,7 +20,7 @@ namespace CleanArch.ATG.Infrastructure.JWT
         {
             _configuration = configuration;
         }
-        public string GenerateToken( UserApplication user , IEnumerable<string> roles )
+        public string GenerateToken( UserApplication user , IEnumerable<string> roles , IEnumerable<string> permissions )
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             //var key = Encoding.ASCII.GetBytes(_configuration ["Jwt:Key"]);
@@ -32,7 +32,8 @@ namespace CleanArch.ATG.Infrastructure.JWT
                 new Claim(ClaimTypes.Name , user.UserName) ,
                 new Claim(ClaimTypes.Email , user.Email)
             };
-            claimList.AddRange(roles.Select(roles => new Claim(ClaimTypes.Role , roles)));
+            claimList.AddRange(roles.Distinct().Select(roles => new Claim(ClaimTypes.Role , roles)));
+            claimList.AddRange(permissions.Distinct().Select(permission => new Claim("Permission" , permission)));
             //foreach (var role in roles)
             //{
             //    claimList.Add(new Claim(ClaimTypes.Role , role));

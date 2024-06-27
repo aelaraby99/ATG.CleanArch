@@ -25,7 +25,11 @@ namespace CleanArch.ATG.Infrastructure.Contexts
         protected override void OnModelCreating( ModelBuilder modelBuilder )
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<BookByAuthor>().HasNoKey();
+            modelBuilder.Entity<BookByAuthor>(bb =>
+            {
+                bb.HasNoKey();
+                bb.ToTable("TEMP_BOOKS");
+            });
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

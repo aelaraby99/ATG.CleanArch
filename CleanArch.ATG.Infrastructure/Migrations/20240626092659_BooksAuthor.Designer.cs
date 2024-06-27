@@ -3,6 +3,7 @@ using System;
 using CleanArch.ATG.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -11,9 +12,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace CleanArch.ATG.Infrastructure.Migrations
 {
     [DbContext(typeof(ATGDbContext))]
-    partial class ATGDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240626092659_BooksAuthor")]
+    partial class BooksAuthor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,20 +35,13 @@ namespace CleanArch.ATG.Infrastructure.Migrations
 
                     b.Property<string>("AuthorName")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(450)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(450)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("BookId");
-
-                    b.HasIndex("Code", "AuthorName")
-                        .IsUnique();
 
                     b.ToTable("Books");
                 });

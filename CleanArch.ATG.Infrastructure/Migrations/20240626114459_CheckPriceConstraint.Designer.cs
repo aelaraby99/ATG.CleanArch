@@ -3,6 +3,7 @@ using System;
 using CleanArch.ATG.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -11,9 +12,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace CleanArch.ATG.Infrastructure.Migrations
 {
     [DbContext(typeof(ATGDbContext))]
-    partial class ATGDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240626114459_CheckPriceConstraint")]
+    partial class CheckPriceConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,6 +41,11 @@ namespace CleanArch.ATG.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(450)");
 
+                    b.Property<decimal>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DECIMAL(18, 2)")
+                        .HasDefaultValue(6.5m);
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
@@ -47,7 +55,10 @@ namespace CleanArch.ATG.Infrastructure.Migrations
                     b.HasIndex("Code", "AuthorName")
                         .IsUnique();
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", t =>
+                        {
+                            t.HasCheckConstraint("Ck_Price", "\"Price\" >= 6.5");
+                        });
                 });
 
             modelBuilder.Entity("CleanArch.ATG.Domain.Entities.BookByAuthor", b =>

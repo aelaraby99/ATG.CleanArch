@@ -8,7 +8,7 @@ namespace CleanArch.ATG.Domain.Entities
 {
     public class BookByAuthor
     {
-        public string title { get; set; }
-        public string authorName { get; set; }
+        public string Title { get; set; }
+        public string AuthorName { get; set; }
     }
 }

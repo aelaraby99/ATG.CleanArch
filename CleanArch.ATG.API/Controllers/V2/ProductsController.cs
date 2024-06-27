@@ -4,12 +4,14 @@ using CleanArch.ATG.Application.Features.ProductFeatures.Queries;
 using CleanArch.ATG.Domain.Entities;
 using CleanArch.ATG.Infrastructure.Contexts;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CleanArch.ATG.API.Controllers.V2
 {
@@ -24,6 +26,7 @@ namespace CleanArch.ATG.API.Controllers.V2
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("2.0")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -53,7 +56,7 @@ namespace CleanArch.ATG.API.Controllers.V2
         {
             _logger.LogWarning($"GetProductById {id} called");
             var product = await _mediator.Send(new GetProductByIdQuery(id));
-            throw new Exception("This is a test exception");
+            //throw new Exception("This is a test exception");
             if (product != null)
             {
                 _logger.LogInformation(JsonSerializer.Serialize(product));
@@ -87,8 +90,8 @@ namespace CleanArch.ATG.API.Controllers.V2
             await _mediator.Send(new UpdateProductCommand(product));
             return Ok();
         }
-        [HttpGet("Books")]
-        public IActionResult GetBooksByAuthor( string authorName )
+        [HttpGet("BookByAuthor")]
+        public IActionResult GetBookByAuthor( string authorName )
         {
             var authorNameParameter = new OracleParameter("Auth_Name" , OracleDbType.NVarchar2)
             {
@@ -116,11 +119,46 @@ namespace CleanArch.ATG.API.Controllers.V2
 
             var book = new BookByAuthor()
             {
-                title = titleParameter.Value.ToString() ,
-                authorName = authorNameOutputParameter.Value.ToString()
+                Title = titleParameter.Value.ToString() ,
+                AuthorName = authorNameOutputParameter.Value.ToString()
             };
 
             return Ok(book);
+        }
+        //[HttpGet("BooksByAuthor")]
+        //public IActionResult GetBooksByAuthor( string authorName )
+        //{
+        //    var authorNameParameter = new OracleParameter("Auth_Name" , OracleDbType.NVarchar2)
+        //    {
+        //        Value = authorName
+        //    };
+
+        //    var booksCursorParameter = new OracleParameter
+        //    {
+        //        ParameterName = "books_cursor" ,
+        //        OracleDbType = OracleDbType.RefCursor ,
+        //        Direction = ParameterDirection.Output
+        //    };
+
+        //    var books = _context.Set<BookByAuthor>().FromSqlRaw("BEGIN GetAllBooks(:Auth_Name, :books_cursor); END;" ,
+        //                                          authorNameParameter , booksCursorParameter).ToList();
+
+        //    return Ok(books);
+        //}
+        [HttpGet("TempBooks")]
+        public async Task<IActionResult> GetTempBooksByAuthorAsync( string authorName )
+        {
+            var authorNameParameter = new OracleParameter("Auth_Name" , OracleDbType.NVarchar2)
+            {
+                Value = authorName
+            };
+
+            await _context.Database.ExecuteSqlRawAsync("BEGIN GetAllTempBooks(:Auth_Name); END;" , authorNameParameter);
+
+            /*SELECT* FROM "NSAPOC"."TEMP_BOOKS"*/
+            var books = _context.Set<BookByAuthor>().FromSqlRaw("select * from temp_books").ToList();
+
+            return Ok(books);
         }
     }
 }
