@@ -1,8 +1,12 @@
 using CleanArch.ATG.API.ErrorHandlers;
 using CleanArch.ATG.API.Middlewares;
 using CleanArch.ATG.Application;
+using CleanArch.ATG.Domain.Entities.Identity;
 using CleanArch.ATG.Infrastructure;
+using CleanArch.ATG.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using NLog;
 using NLog.Web;
 using System.Net;
 
@@ -29,6 +33,18 @@ namespace CleanArch.ATG.API
                 //builder.Host.UseNLog();  // This sets up NLog for Dependency Injection
 
                 var app = builder.Build();
+
+                using var scope = app.Services.CreateScope();
+
+                var services = scope.ServiceProvider;
+
+                // Get your DbContext instances
+                var dbContext = services.GetRequiredService<ATGDbContext>();
+                var userManager = services.GetRequiredService<UserManager<UserApplication>>();
+                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
+                DataSeeding.SeedData(builder.Configuration , userManager , roleManager);
+
 
                 // Configure the HTTP request pipeline.
 

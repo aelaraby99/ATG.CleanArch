@@ -22,15 +22,13 @@ namespace CleanArch.ATG.API.Controllers.V2
         private readonly SignInManager<UserApplication> _signInManager;
         private readonly IJwtTokenService _jwtTokenservice;
 
-        public AccountsController( UserManager<UserApplication> userManager , RoleManager<AppRole> roleManager , SignInManager<UserApplication> signInManager , IJwtTokenService jwtTokenservice )
+        public AccountsController( UserManager<UserApplication> userManager , RoleManager<AppRole> roleManager , SignInManager<UserApplication> signInManager , IJwtTokenService jwtTokenservice)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _jwtTokenservice = jwtTokenservice;
         }
-
-
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register( [FromBody] UserApplication request )
@@ -53,7 +51,7 @@ namespace CleanArch.ATG.API.Controllers.V2
         [AllowAnonymous]
         public async Task<IActionResult> Login( LoginRequestDTO request )
         {
-            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+            var existingUser = await _userManager.FindByNameAsync(request.UserName);
             if (existingUser == null)
                 return NotFound("User Not Exist");
             var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(existingUser , request.Password , false);
@@ -89,7 +87,7 @@ namespace CleanArch.ATG.API.Controllers.V2
         [HttpGet("AllRoles")]
         public async Task<IActionResult> GetRoles()
         {
-            var roles = await _roleManager.Roles.Select(r=>r.Name).ToListAsync();
+            var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             return Ok(roles);
         }
         //Create Role

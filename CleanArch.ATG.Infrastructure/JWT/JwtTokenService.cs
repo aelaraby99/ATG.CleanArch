@@ -29,8 +29,7 @@ namespace CleanArch.ATG.Infrastructure.JWT
             var claimList = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()) ,
-                new Claim(ClaimTypes.Name , user.UserName) ,
-                new Claim(ClaimTypes.Email , user.Email)
+                new Claim(ClaimTypes.Name , user.UserName) 
             };
             claimList.AddRange(roles.Distinct().Select(roles => new Claim(ClaimTypes.Role , roles)));
             claimList.AddRange(permissions.Distinct().Select(permission => new Claim("Permission" , permission)));

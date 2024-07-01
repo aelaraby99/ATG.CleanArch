@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using CleanArch.ATG.API.Utilities;
 using CleanArch.ATG.Application.Features.ProductFeatures.Commands;
 using CleanArch.ATG.Application.Features.ProductFeatures.Queries;
 using CleanArch.ATG.Domain.Entities;
@@ -52,6 +53,7 @@ namespace CleanArch.ATG.API.Controllers.V2
             return Ok(products.ToList());
         }
         [HttpGet("{id:int}")]
+        [HasPermission("NoPermission")]
         public async Task<ActionResult<Product>> GetProductById( int id )
         {
             _logger.LogWarning($"GetProductById {id} called");
