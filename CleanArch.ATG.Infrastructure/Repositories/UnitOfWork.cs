@@ -1,5 +1,6 @@
 ﻿using CleanArch.ATG.Application.Interfaces;
 using CleanArch.ATG.Infrastructure.Contexts;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,6 +56,11 @@ namespace CleanArch.ATG.Infrastructure.Repositories
         public async ValueTask DisposeAsync()
         {
             await _context.DisposeAsync();
+        }
+
+        public IDbContextTransaction BeginTransaction()
+        {
+            return _context.Database.BeginTransaction();
         }
     }
 }

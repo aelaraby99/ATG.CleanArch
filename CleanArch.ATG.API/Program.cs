@@ -43,21 +43,17 @@ namespace CleanArch.ATG.API
                 var userManager = services.GetRequiredService<UserManager<UserApplication>>();
                 var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
 
-                DataSeeding.SeedData(builder.Configuration , userManager , roleManager);
-
+                //DataSeeding.SeedData(builder.Configuration , userManager , roleManager);
 
                 // Configure the HTTP request pipeline.
-
-                if (app.Environment.IsDevelopment())
+                app.UseSwagger();
+                //app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
                 {
-                    app.UseSwagger();
-                    //app.UseSwaggerUI();
-                    app.UseSwaggerUI(c =>
-                    {
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json" , "API V1"); //Select a definition
-                        c.SwaggerEndpoint("/swagger/v2/swagger.json" , "API V2");
-                    });
-                }
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json" , "API V1"); //Select a definition
+                    c.SwaggerEndpoint("/swagger/v2/swagger.json" , "API V2");
+                });
+
                 app.UseHttpsRedirection();
 
                 app.UseStaticFiles();

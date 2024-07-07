@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.DirectoryServices.AccountManagement;
+using System.Net;
 using System.Security.Claims;
 
 namespace CleanArch.ATG.API.Controllers.V2
@@ -22,7 +23,7 @@ namespace CleanArch.ATG.API.Controllers.V2
         private readonly SignInManager<UserApplication> _signInManager;
         private readonly IJwtTokenService _jwtTokenservice;
 
-        public AccountsController( UserManager<UserApplication> userManager , RoleManager<AppRole> roleManager , SignInManager<UserApplication> signInManager , IJwtTokenService jwtTokenservice)
+        public AccountsController( UserManager<UserApplication> userManager , RoleManager<AppRole> roleManager , SignInManager<UserApplication> signInManager , IJwtTokenService jwtTokenservice )
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -61,7 +62,7 @@ namespace CleanArch.ATG.API.Controllers.V2
             if (!result.Succeeded)
                 return BadRequest("Invalid credentials.");
 
-            var userRoles = await _userManager.GetRolesAsync(existingUser);
+            var userRoles = await _userManager.GetRolesAsync(existingUser); //should be based on the group not userRoles
             var userPermissions = new List<string>();
             //var userPermissions = new HashSet<string>();
             foreach (var role in userRoles)
@@ -214,50 +215,7 @@ namespace CleanArch.ATG.API.Controllers.V2
 
         #endregion
 
-        #region ActiveDirecory
-
-        [HttpPost("ActiveDir")]
-        public async Task<IActionResult> ActiveDir( string userName , string password )
-        {
-            //var userPrincipal = UserPrincipal.Current.GetAuthorizationGroups();
-            //foreach (var group in userPrincipal)
-            //{
-            //    Console.WriteLine(group.DisplayName);
-            //    Console.WriteLine(group.Name);
-            //    Console.WriteLine(group.DistinguishedName);
-            //    Console.WriteLine("=========================");
-            //}
-            using (var context = new PrincipalContext(ContextType.Domain , "ASSETDEV"))
-            {
-
-                if (context.ValidateCredentials(userName , password))
-                {
-                    var currentUser = UserPrincipal.FindByIdentity(context , IdentityType.SamAccountName , userName);
-                    var groups = currentUser.GetAuthorizationGroups();
-                    var permisions = new List<string>();
-                    foreach (var group in groups)
-                    {
-                        if (group is GroupPrincipal)
-                        {
-                            permisions.Add(group.Name);
-                        }
-                    }
-                    var obj = new
-                    {
-                        currentUser.DisplayName ,
-                        currentUser.EmailAddress ,
-                        currentUser.GivenName ,
-                        currentUser.SamAccountName ,
-                        currentUser.UserPrincipalName ,
-                        permissons = string.Join("," , permisions)
-                    };
-                    ///
-                    return Ok(obj);
-                }
-            }
-            return Ok("False");
-        }
-        #endregion
+     
         #region User
         [HttpGet]
         public async Task<IActionResult> Get()

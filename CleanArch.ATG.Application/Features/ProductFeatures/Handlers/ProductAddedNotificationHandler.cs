@@ -14,7 +14,9 @@ namespace CleanArch.ATG.Application.Features.ProductFeatures.Handlers
         }
         public Task Handle( ProductAddedNotification notification , CancellationToken cancellationToken )
         {
-            return _fakeDataRepo.EventOccured(notification.product , "Product Added");
+            _fakeDataRepo.EventOccured(notification.product , "Product Added");
+            //Tasks like sending email, sms, logging etc
+            return Task.CompletedTask;
         }
     }
 }

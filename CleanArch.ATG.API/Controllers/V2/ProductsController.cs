@@ -2,17 +2,17 @@
 using CleanArch.ATG.API.Utilities;
 using CleanArch.ATG.Application.Features.ProductFeatures.Commands;
 using CleanArch.ATG.Application.Features.ProductFeatures.Queries;
+using CleanArch.ATG.Application.Interfaces;
 using CleanArch.ATG.Domain.Entities;
 using CleanArch.ATG.Infrastructure.Contexts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NLog;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace CleanArch.ATG.API.Controllers.V2
 {
@@ -33,12 +33,14 @@ namespace CleanArch.ATG.API.Controllers.V2
         private readonly IMediator _mediator;
         private readonly ILogger<ProductsController> _logger;
         private readonly ATGDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductsController( IMediator mediator , ILogger<ProductsController> logger , ATGDbContext context )
+        public ProductsController( IMediator mediator , ILogger<ProductsController> logger , ATGDbContext context , IUnitOfWork unitOfWork )
         {
             _mediator = mediator;
             _logger = logger;
             _context = context;
+            _unitOfWork = unitOfWork;
         }
         //[HttpGet]
         //public IActionResult Get()
@@ -161,6 +163,34 @@ namespace CleanArch.ATG.API.Controllers.V2
             var books = _context.Set<BookByAuthor>().FromSqlRaw("select * from temp_books").ToList();
 
             return Ok(books);
+        }
+        [AllowAnonymous]
+        [HttpPost("CreateBook")]
+        public async Task<IActionResult> CreateBook( [FromBody] Book book , string name  )
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var createdBook = await _unitOfWork.GenericRepository<Book>().AddAsync(book);
+
+                    var library = new Brand
+                    {
+                        Name = name 
+                    };
+
+                    var createdLibrary = await _unitOfWork.GenericRepository<Brand>().AddAsync(library);
+
+                    await _unitOfWork.CompleteAsync();
+                    transaction.Commit();
+                    return Ok(new { createdBook , createdLibrary });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return BadRequest(ex.Message);
+                }
+            }
         }
     }
 }
