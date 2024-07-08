@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning;
 using CleanArch.ATG.API.Utilities;
-using CleanArch.ATG.Application.Features.ProductFeatures.Commands;
+using CleanArch.ATG.Application.Features.ProductFeatures.Commands.AddProductCommands;
+using CleanArch.ATG.Application.Features.ProductFeatures.Commands.DeleteProductCommands;
+using CleanArch.ATG.Application.Features.ProductFeatures.Commands.UpdateProductCommands;
 using CleanArch.ATG.Application.Features.ProductFeatures.Queries;
 using CleanArch.ATG.Application.Interfaces;
 using CleanArch.ATG.Domain.Entities;
@@ -27,7 +29,7 @@ namespace CleanArch.ATG.API.Controllers.V2
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("2.0")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -51,6 +53,7 @@ namespace CleanArch.ATG.API.Controllers.V2
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
+            throw new Exception();
             var products = await _mediator.Send(new GetProductsQuery());
             return Ok(products.ToList());
         }
@@ -73,13 +76,9 @@ namespace CleanArch.ATG.API.Controllers.V2
             }
         }
         [HttpPost]
-        public async Task<ActionResult<Product>> AddProduct( [FromBody] Product product )
-        {
-            var productToReturn = await _mediator.Send(new AddProductCommand(product));
-            //await _mediator.Publish(new ProductAddedNotification(productToReturn));
-            //return Ok(productToReturn);
-            return CreatedAtAction(nameof(GetProductById) , new { id = productToReturn.Id } , productToReturn);
-        }
+        public async Task<ActionResult<Product>> AddProduct( AddProductCommand product ) 
+            => Ok(await _mediator.Send(product));
+
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteProduct( int id )
         {
@@ -166,7 +165,7 @@ namespace CleanArch.ATG.API.Controllers.V2
         }
         [AllowAnonymous]
         [HttpPost("CreateBook")]
-        public async Task<IActionResult> CreateBook( [FromBody] Book book , string name  )
+        public async Task<IActionResult> CreateBook( [FromBody] Book book , string name )
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -176,7 +175,7 @@ namespace CleanArch.ATG.API.Controllers.V2
 
                     var library = new Brand
                     {
-                        Name = name 
+                        Name = name
                     };
 
                     var createdLibrary = await _unitOfWork.GenericRepository<Brand>().AddAsync(library);

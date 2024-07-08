@@ -1,5 +1,4 @@
 ﻿using CleanArch.ATG.API.ErrorHandlers;
-using NLog;
 using System.Net;
 
 namespace CleanArch.ATG.API.Middlewares
@@ -20,6 +19,10 @@ namespace CleanArch.ATG.API.Middlewares
             {
                 await _next(httpContext);
             }
+            catch (FluentValidation.ValidationException ex)
+            {
+                await HandleValidationExceptionAsync(httpContext , ex);
+            }
             catch (Exception ex)
             {
                 httpContext.Response.ContentType = "application/json";
@@ -28,11 +31,25 @@ namespace CleanArch.ATG.API.Middlewares
                 var response = new ErrorDetails()
                 {
                     StatusCode = httpContext.Response.StatusCode ,
-                    Message = ex.Message
+                    Message = new List<string>() { ex.Message }
                 }.ToString();
                 _logger.LogError($"Something went wrong: {response}");
                 await httpContext.Response.WriteAsync(response);
             }
+        }
+
+        private async Task HandleValidationExceptionAsync( HttpContext context , FluentValidation.ValidationException exception )
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var validationErrors = exception.Errors.Select(e => e.ErrorMessage).ToList();
+            var errorDetails = new ErrorDetails
+            {
+                StatusCode = context.Response.StatusCode ,
+                Message = validationErrors
+            };
+            await context.Response.WriteAsync(errorDetails.ToString());
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using CleanArch.ATG.Application.Features.ProductFeatures.Notifications;
-using CleanArch.ATG.Infrastructure.Data;
+﻿using CleanArch.ATG.Infrastructure.Data;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanArch.ATG.Application.Features.ProductFeatures.Handlers
+namespace CleanArch.ATG.Application.Features.ProductFeatures.Notifications
 {
     public class LoggingHandler : INotificationHandler<ProductAddedNotification>
     {
@@ -17,9 +16,9 @@ namespace CleanArch.ATG.Application.Features.ProductFeatures.Handlers
         {
             _fakeDataRepo = fakeDataRepo;
         }
-        public async Task Handle( ProductAddedNotification notification , CancellationToken cancellationToken )
+        public async Task Handle(ProductAddedNotification notification, CancellationToken cancellationToken)
         {
-            await _fakeDataRepo.EventOccured(notification.product , "Product Chached");
+            await _fakeDataRepo.EventOccured(notification.product, "Product Chached");
         }
     }
 }

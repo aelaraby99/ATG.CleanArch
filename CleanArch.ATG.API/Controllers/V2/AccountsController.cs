@@ -1,13 +1,11 @@
 ﻿using Asp.Versioning;
-using CleanArch.ATG.Application.DTO;
+using CleanArch.ATG.Application.DTOs;
 using CleanArch.ATG.Application.Interfaces.JWT;
 using CleanArch.ATG.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.DirectoryServices.AccountManagement;
-using System.Net;
 using System.Security.Claims;
 
 namespace CleanArch.ATG.API.Controllers.V2

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanArch.ATG.Application.Features.ProductFeatures.Commands
+namespace CleanArch.ATG.Application.Features.ProductFeatures.Commands.DeleteProductCommands
 {
     public record DeleteProductCommand(int Id) : IRequest;
 }
