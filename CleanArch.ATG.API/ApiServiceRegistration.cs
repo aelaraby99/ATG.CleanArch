@@ -4,8 +4,10 @@ using CleanArch.ATG.Domain.Entities.Identity;
 using CleanArch.ATG.Infrastructure.Contexts;
 using CleanArch.ATG.Infrastructure.JWT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog.Extensions.Logging;
@@ -36,7 +38,6 @@ namespace CleanArch.ATG.API
                 c.GroupNameFormat = "'v'VVV";
                 c.SubstituteApiVersionInUrl = true;
             });
-
             //services.AddDbContext<ATGDbContext>
             //    (options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection") ,
             //    b => b.MigrationsAssembly(typeof(ATGDbContext).Assembly.FullName)));
@@ -58,9 +59,10 @@ namespace CleanArch.ATG.API
             var key = Encoding.ASCII.GetBytes(configuration ["Jwt:Key"]);
             services.AddAuthentication(x =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+                x.DefaultAuthenticateScheme = NegotiateDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = NegotiateDefaults.AuthenticationScheme;
+                x.DefaultScheme = NegotiateDefaults.AuthenticationScheme;
+            }).AddNegotiate()
             .AddJwtBearer(x =>
             {
                 x.RequireHttpsMetadata = false;
@@ -73,6 +75,12 @@ namespace CleanArch.ATG.API
                     ValidateAudience = false
                 };
             });
+            //services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = options.DefaultPolicy;
+            });
+
             // Add NLog as the logging provider
             services.AddLogging(loggingBuilder =>
             {

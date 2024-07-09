@@ -4,6 +4,7 @@ using CleanArch.ATG.Application;
 using CleanArch.ATG.Domain.Entities.Identity;
 using CleanArch.ATG.Infrastructure;
 using CleanArch.ATG.Infrastructure.Contexts;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using NLog;
@@ -23,11 +24,11 @@ namespace CleanArch.ATG.API
 
                 // Add services to the container.
 
+               
                 builder.Services.AddControllers();
                 builder.Services.AddApiServices(builder.Configuration);
                 builder.Services.AddApplicationServices();
                 builder.Services.AddInfrastructureServices();
-
                 //builder.Logging.ClearProviders();
                 //builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
                 //builder.Host.UseNLog();  // This sets up NLog for Dependency Injection
@@ -61,6 +62,7 @@ namespace CleanArch.ATG.API
                 app.UseRouting();
 
                 app.UseAuthentication();
+                
                 app.UseAuthorization();
                 app.UseMiddleware<ExceptionMiddleware>();
                 //app.ConfigureExceptionHandler(logger);

@@ -25,7 +25,6 @@ namespace CleanArch.ATG.Infrastructure.JWT
             var tokenHandler = new JwtSecurityTokenHandler();
             //var key = Encoding.ASCII.GetBytes(_configuration ["Jwt:Key"]);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration ["JWT:Key"]));
-
             var claimList = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()) ,
@@ -48,5 +47,6 @@ namespace CleanArch.ATG.Infrastructure.JWT
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
     }
 }

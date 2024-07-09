@@ -44,12 +44,6 @@ namespace CleanArch.ATG.API.Controllers.V2
             _context = context;
             _unitOfWork = unitOfWork;
         }
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
-        //    var fruites = Data.Fruits.Where(f => f.StartsWith("B"));
-        //    return Ok(fruites);
-        //}
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {

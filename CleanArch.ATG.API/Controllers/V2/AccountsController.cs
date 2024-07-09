@@ -213,7 +213,7 @@ namespace CleanArch.ATG.API.Controllers.V2
 
         #endregion
 
-     
+
         #region User
         [HttpGet]
         public async Task<IActionResult> Get()
